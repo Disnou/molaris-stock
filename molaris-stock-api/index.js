@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
@@ -8,104 +7,122 @@ app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+    connectionString: "postgresql://postgres:yitzhak20072347123@db.icjsarcbcbqwjnouylnf.supabase.co:5432/postgres",
+    ssl: { rejectUnauthorized: false }
 });
 
-// --- ROTAS DE AUTENTICAÇÃO (LOGIN E CADASTRO) ---
-app.post('/cadastrar-usuario', async (req, res) => {
-  try {
-    const { nome, email, senha } = req.body;
-    await pool.query('INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3)', [nome, email, senha]);
-    res.json({ mensagem: 'Cientista cadastrado com sucesso!' });
-  } catch (err) {
-    if (err.code === '23505') return res.status(400).json({ erro: 'Este email já está cadastrado.' });
-    res.status(500).json({ erro: 'Erro ao cadastrar usuário.' });
-  }
-});
-
-app.post('/login', async (req, res) => {
-  try {
-    const { email, senha } = req.body;
-    const { rows } = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND senha = $2', [email, senha]);
-    if (rows.length === 0) return res.status(401).json({ erro: 'Email ou senha incorretos.' });
-    res.json({ mensagem: 'Login aprovado!', usuario: rows[0].nome });
-  } catch (err) {
-    res.status(500).json({ erro: 'Erro ao fazer login.' });
-  }
-});
-
-// --- ROTAS DO ESTOQUE ---
-// Nova rota: Busca a lista de reagentes para montar a caixinha de seleção
+// --- LISTAR REAGENTES (alimenta o <select> do painel) ---
 app.get('/reagentes', async (req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT * FROM reagentes ORDER BY nome ASC');
-    res.json(rows);
-  } catch (err) {
-    res.status(500).send('Erro no servidor');
-  }
-});
-
-app.get('/estoque', async (req, res) => {
-  try {
-    const { rows } = await pool.query(`
-      SELECT reagentes.nome, lotes.numero_lote, lotes.quantidade_atual, reagentes.unidade_base, lotes.data_validade
-      FROM lotes
-      JOIN reagentes ON lotes.reagente_id = reagentes.id
-      ORDER BY lotes.id ASC;
-    `);
-    res.json(rows);
-  } catch (err) {
-    res.status(500).send('Erro no servidor');
-  }
-});
-
-app.put('/baixar-estoque', async (req, res) => {
-  try {
-    const { numero_lote, quantidade_usada } = req.body;
-    const consulta = await pool.query('SELECT quantidade_atual FROM lotes WHERE numero_lote = $1', [numero_lote]);
-    if (consulta.rowCount === 0) return res.status(404).json({ erro: 'Lote não encontrado.' });
-    
-    const estoqueAtual = consulta.rows[0].quantidade_atual;
-    if (quantidade_usada > estoqueAtual) return res.status(400).json({ erro: `Estoque insuficiente! Apenas ${estoqueAtual} disponíveis.` });
-
-    const resultado = await pool.query('UPDATE lotes SET quantidade_atual = quantidade_atual - $1 WHERE numero_lote = $2 RETURNING *', [quantidade_usada, numero_lote]);
-    res.json({ mensagem: 'Sucesso!', lote: resultado.rows[0] });
-  } catch (err) {
-    res.status(500).send('Erro interno');
-  }
-});
-
-app.post('/novo-lote', async (req, res) => {
-  try {
-    const { reagente_id, numero_lote, quantidade_atual, data_validade } = req.body;
-    const loteExistente = await pool.query('SELECT * FROM lotes WHERE numero_lote = $1', [numero_lote]);
-
-    if (loteExistente.rowCount > 0) {
-      const resultado = await pool.query('UPDATE lotes SET quantidade_atual = quantidade_atual + $1 WHERE numero_lote = $2 RETURNING *', [quantidade_atual, numero_lote]);
-      return res.json({ mensagem: 'Estoque reabastecido!', lote: resultado.rows[0] });
-    } else {
-      const resultado = await pool.query('INSERT INTO lotes (reagente_id, numero_lote, quantidade_atual, data_validade) VALUES ($1, $2, $3, $4) RETURNING *', [reagente_id, numero_lote, quantidade_atual, data_validade]);
-      return res.json({ mensagem: 'Novo lote cadastrado!', lote: resultado.rows[0] });
+    try {
+        const result = await pool.query('SELECT * FROM reagentes ORDER BY nome');
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Erro ao buscar reagentes:", err);
+        res.status(500).json({ error: err.message });
     }
-  } catch (err) {
-    res.status(500).send('Erro ao cadastrar lote.');
-  }
 });
 
-app.delete('/excluir-lote/:numero_lote', async (req, res) => {
-  try {
-    const { numero_lote } = req.params;
-    const resultado = await pool.query('DELETE FROM lotes WHERE numero_lote = $1 RETURNING *', [numero_lote]);
-    if (resultado.rowCount === 0) return res.status(404).json({ erro: 'Lote não encontrado para exclusão.' });
-    res.json({ mensagem: 'Lote excluído com sucesso!' });
-  } catch (err) {
-    res.status(500).send('Erro interno ao excluir o lote.');
-  }
+// --- LISTAR LOTES ---
+// Precisa do JOIN com "reagentes" porque o painel usa item.nome e
+// item.unidade_base, que não existem na tabela "lotes" sozinha.
+app.get('/estoque', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT l.*, r.nome, r.unidade_base
+            FROM lotes l
+            JOIN reagentes r ON r.id = l.reagente_id
+            ORDER BY l.numero_lote
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Erro ao buscar lotes:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+// --- CADASTRAR NOVO LOTE ---
+app.post('/novo-lote', async (req, res) => {
+    try {
+        // o painel envia "quantidade_atual" no corpo da requisição
+        const { reagente_id, numero_lote, quantidade_atual, data_validade } = req.body;
+
+        const query = `
+            INSERT INTO lotes (reagente_id, numero_lote, quantidade_inicial, quantidade_atual, data_validade) 
+            VALUES ($1, $2, $3, $4, $5) 
+            RETURNING *`;
+
+        await pool.query(query, [reagente_id, numero_lote, quantidade_atual, quantidade_atual, data_validade]);
+
+        res.json({ message: "Lote cadastrado com sucesso!" });
+    } catch (err) {
+        console.error("Erro ao inserir lote:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- DAR BAIXA NO ESTOQUE (botão "Usar") ---
+app.put('/baixar-estoque', async (req, res) => {
+    try {
+        const { numero_lote, quantidade_usada } = req.body;
+
+        const query = `
+            UPDATE lotes
+            SET quantidade_atual = quantidade_atual - $1
+            WHERE numero_lote = $2
+            RETURNING *`;
+
+        const result = await pool.query(query, [quantidade_usada, numero_lote]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Lote não encontrado" });
+        }
+
+        res.json({ message: "Baixa registrada com sucesso!", lote: result.rows[0] });
+    } catch (err) {
+        console.error("Erro ao dar baixa:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- EXCLUIR LOTE (botão "Excluir") ---
+app.delete('/excluir-lote/:lote', async (req, res) => {
+    try {
+        const { lote } = req.params;
+        await pool.query('DELETE FROM lotes WHERE numero_lote = $1', [lote]);
+        res.json({ message: "Lote excluído com sucesso!" });
+    } catch (err) {
+        console.error("Erro ao excluir lote:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- CADASTRAR USUÁRIO (botão "Criar meu acesso" no login) ---
+app.post('/cadastrar-usuario', async (req, res) => {
+    try {
+        const { nome, email, senha } = req.body;
+        const query = `INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING *`;
+        await pool.query(query, [nome, email, senha]);
+        res.status(201).json({ message: "Sucesso!" });
+    } catch (err) {
+        console.error("Erro ao cadastrar usuário:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- LOGIN ---
+app.post('/login', async (req, res) => {
+    try {
+        const { email, senha } = req.body;
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1 AND senha = $2', [email, senha]);
+        if (result.rows.length > 0) {
+            // devolve o nome para o front-end mostrar "Cientista logado: <nome>"
+            res.json({ message: "Sucesso!", nome: result.rows[0].nome });
+        } else {
+            res.status(401).json({ error: "Inválido" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.listen(3000, () => console.log('Servidor rodando na porta 3000 - CONECTADO AO BANCO CORRETO'));
