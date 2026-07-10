@@ -1,13 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
+const path = require('path'); // Adicionado para lidar com as pastas do site
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// --- CONFIGURAÇÃO DO FRONT-END (INTERFACE) ---
+// Diz ao servidor onde estão as telas do site (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Quando alguém acessar a raiz do site, redireciona para a tela de login
+app.get('/', (req, res) => {
+    res.redirect('/login.html');
+});
+
+// --- CONEXÃO COM O BANCO DE DADOS ---
 const pool = new Pool({
-    connectionString: "postgresql://postgres:yitzhak20072347123@db.icjsarcbcbqwjnouylnf.supabase.co:5432/postgres",
+    // Usa a variável de ambiente do Render, e só usa o link direto se rodar no seu computador
+    connectionString: process.env.DATABASE_URL || "postgresql://postgres:yitzhak20072347123@db.icjsarcbcbqwjnouylnf.supabase.co:5432/postgres",
     ssl: { rejectUnauthorized: false }
 });
 
@@ -125,4 +137,9 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.listen(3000, () => console.log('Servidor rodando na porta 3000 - CONECTADO AO BANCO CORRETO'));
+// --- INICIAR SERVIDOR ---
+// Usa a porta do Render ou a 3000 se for no seu computador
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor MolarisStock online na porta ${PORT} - TUDO PRONTO!`);
+});
