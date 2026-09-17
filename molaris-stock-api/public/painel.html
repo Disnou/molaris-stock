@@ -5,42 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MolarisStock — Painel de Controle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-void:#0d0818;
-    --bg-void-2:#140c26;
-    --surface:#1b1233;
-    --surface-2:#241a42;
-    --border:rgba(147,112,255,0.18);
-    --border-strong:rgba(167,139,250,0.4);
+    color-scheme: dark;
+    --bg-void:#090514;
+    --bg-void-2:#130b24;
+    --surface:#18102e;
+    --surface-2:#221740;
+    --surface-3:#2c1e52;
+    --border:rgba(147,112,255,0.22);
+    --border-strong:rgba(167,139,250,0.5);
     --violet:#7c3aed;
     --violet-bright:#9b6bff;
     --violet-glow:#a78bfa;
     --cyan:#22d3ee;
-    --text-1:#f4f1ff;
-    --text-2:#b6ace0;
-    --text-3:#7a71a3;
+    --cyan-glow:rgba(34,211,238,0.3);
+    --text-1:#ffffff;
+    --text-2:#d1cce8;
+    --text-3:#9b92c4;
     --danger:#f87171;
-    --danger-bg:rgba(248,113,113,0.12);
+    --danger-bg:rgba(248,113,113,0.15);
     --warning:#fbbf24;
-    --warning-bg:rgba(251,191,36,0.12);
+    --warning-bg:rgba(251,191,36,0.15);
     --success:#34d399;
-    --success-bg:rgba(52,211,153,0.12);
+    --success-bg:rgba(52,211,153,0.15);
     --radius:14px;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0;color-scheme:dark;}
   body{
-    font-family:'Inter',sans-serif;
+    font-family:'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     min-height:100vh;
     color:var(--text-1);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
     background:
-      radial-gradient(circle at 8% 0%, rgba(124,58,237,0.25), transparent 38%),
-      radial-gradient(circle at 95% 30%, rgba(34,211,238,0.10), transparent 40%),
+      radial-gradient(circle at 6% 0%, rgba(124,58,237,0.28), transparent 40%),
+      radial-gradient(circle at 94% 25%, rgba(34,211,238,0.12), transparent 42%),
       linear-gradient(160deg, var(--bg-void) 0%, var(--bg-void-2) 100%);
     background-attachment:fixed;
-    padding:0 0 60px;
+    padding:0 0 70px;
     position:relative;
   }
   body::before{
@@ -49,20 +55,23 @@
     inset:0;
     background-image:radial-gradient(rgba(167,139,250,0.10) 1px, transparent 1.4px);
     background-size:28px 28px;
-    mask-image:radial-gradient(ellipse at 20% 10%, black 0%, transparent 55%);
+    mask-image:radial-gradient(ellipse at 20% 10%, black 0%, transparent 60%);
     pointer-events:none;
+    z-index:1;
   }
   
+  /* TOPBAR */
   .topbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:22px 40px;
+    padding:18px 36px;
     border-bottom:1px solid var(--border);
-    background:rgba(13,8,24,0.5);
-    backdrop-filter:blur(10px);
-    position:relative;
-    z-index:2;
+    background:rgba(12,7,24,0.7);
+    backdrop-filter:blur(14px);
+    position:sticky;
+    top:0;
+    z-index:50;
   }
   .brand{display:flex;align-items:center;gap:12px;}
   .logo-ring{
@@ -75,31 +84,42 @@
   .logo-ring svg{width:20px;height:20px;}
   .brand-text h1{
     font-family:'Space Grotesk',sans-serif;
-    font-size:19px;
+    font-size:20px;
     font-weight:700;
     margin:0;
     letter-spacing:-0.01em;
   }
   .brand-text span{
     font-family:'JetBrains Mono',monospace;
-    font-size:10.5px;
+    font-size:10px;
     color:var(--cyan);
     letter-spacing:0.08em;
     text-transform:uppercase;
   }
 
-  .top-right { display: flex; align-items: center; }
-  .btn-lang { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-right: 15px; font-family: 'JetBrains Mono', monospace; font-size: 11px;}
-  .btn-lang:hover { background: rgba(34,211,238,0.15); }
+  .top-right{display:flex;align-items:center;gap:12px;}
+  .btn-lang{
+    background:transparent;
+    color:var(--cyan);
+    border:1px solid var(--cyan);
+    padding:6px 12px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.2s;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+  }
+  .btn-lang:hover{background:rgba(34,211,238,0.15);}
 
   .user-chip{
     display:flex;align-items:center;gap:8px;
     font-family:'JetBrains Mono',monospace;
-    font-size:12.5px;
+    font-size:12px;
     color:var(--text-2);
     background:var(--surface);
     border:1px solid var(--border);
-    padding:8px 14px;
+    padding:7px 14px;
     border-radius:100px;
   }
   .user-chip .dot{
@@ -107,169 +127,341 @@
     background:var(--success);
     box-shadow:0 0 8px var(--success);
   }
+  .btn-logout{
+    background:transparent;
+    border:1px solid rgba(248,113,113,0.3);
+    color:var(--danger);
+    padding:6px 10px;
+    border-radius:8px;
+    font-size:11.5px;
+    cursor:pointer;
+    transition:0.2s;
+    font-weight:600;
+  }
+  .btn-logout:hover{background:var(--danger-bg);}
   
   .container{
-    max-width:1180px;
-    margin:36px auto 0;
-    padding:0 40px;
+    max-width:1220px;
+    margin:28px auto 0;
+    padding:0 28px;
     position:relative;
     z-index:2;
   }
-  
-  .panel{
-    background:linear-gradient(180deg, rgba(36,26,66,0.6), rgba(27,18,51,0.6));
+
+  /* METRICS BAR */
+  .metrics-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .metric-card{
+    background:linear-gradient(180deg, rgba(34,23,64,0.6), rgba(24,16,46,0.6));
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:26px 28px;
+    padding:16px 20px;
+    backdrop-filter:blur(10px);
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .metric-icon{
+    width:40px;height:40px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;
+  }
+  .metric-info h3{
+    margin:0;font-size:22px;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--text-1);
+  }
+  .metric-info p{
+    margin:2px 0 0;font-size:11px;color:var(--text-3);text-transform:uppercase;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;
+  }
+  
+  /* PAINEL PRINCIPAL */
+  .panel{
+    background:linear-gradient(180deg, rgba(34,23,64,0.65), rgba(24,16,46,0.65));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px 26px;
     margin-bottom:22px;
     backdrop-filter:blur(14px);
+    box-shadow:0 12px 32px -10px rgba(0,0,0,0.4);
   }
   .panel-title{
-    display:flex;align-items:center;gap:9px;
+    display:flex;align-items:center;gap:10px;
     font-family:'Space Grotesk',sans-serif;
-    font-size:15.5px;
+    font-size:16px;
     font-weight:600;
     color:var(--text-1);
-    margin:0 0 18px;
+    margin:0 0 16px;
   }
   .panel-title::before{
     content:"";
-    width:6px;height:6px;border-radius:2px;
+    width:7px;height:7px;border-radius:2px;
     background:var(--violet-bright);
-    box-shadow:0 0 8px var(--violet-bright);
+    box-shadow:0 0 10px var(--violet-bright);
   }
   
-  .form-row{
-    display:flex;
+  /* FORMULÁRIO MODERNO & FLUIDO */
+  .form-grid{
+    display:grid;
+    grid-template-columns: 2fr 1.3fr 1fr 1.3fr 1.2fr auto;
     gap:12px;
-    flex-wrap:wrap;
+    align-items:end;
   }
-  .form-row select,
-  .form-row input{
-    background:rgba(13,8,24,0.6);
-    border:1px solid var(--border);
-    border-radius:9px;
-    color:var(--text-1);
-    font-size:13.5px;
-    font-family:'Inter',sans-serif;
+  .form-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .form-group label{
+    font-size:11.5px;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
+    color:var(--text-2);
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .form-group label .hint{
+    font-size:10px;
+    color:var(--cyan);
+    font-family:'JetBrains Mono', monospace;
+    font-weight:500;
+    text-transform:none;
+  }
+  
+  .input-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  
+  select, input{
+    color-scheme: dark;
+    background:#130b29;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    color:#ffffff;
+    font-size:14px;
+    font-family:'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    font-weight:500;
     padding:11px 13px;
     outline:none;
-    transition:border-color .15s, box-shadow .15s;
+    transition:border-color .18s, box-shadow .18s, background .18s;
+    width:100%;
+    -webkit-font-smoothing:antialiased;
   }
-  .form-row select:focus,
-  .form-row input:focus{
+  select:hover, input:hover{
+    border-color:var(--border-strong);
+    background:#170f32;
+  }
+  select:focus, input:focus{
     border-color:var(--violet-bright);
-    box-shadow:0 0 0 3px rgba(124,58,237,0.2);
+    background:#191136;
+    box-shadow:0 0 0 3px rgba(155,107,255,0.28);
   }
-  .form-row select{flex:1.3;min-width:170px;color:var(--text-2);}
-  .form-row input[data-type="lote"]{flex:1.3;min-width:150px;font-family:'JetBrains Mono',monospace;}
-  .form-row input[data-type="qtd"]{flex:0.8;min-width:100px;font-family:'JetBrains Mono',monospace;}
-  .form-row input[data-type="data"]{flex:0.9;min-width:130px;font-family:'JetBrains Mono',monospace;color:var(--text-2);}
-  
+
+  /* DROPDOWN OPTIONS ESTILIZADAS COM ALTO CONTRASTE */
+  select{
+    cursor:pointer;
+  }
+  select option{
+    background-color:#160e2e !important;
+    color:#ffffff !important;
+    font-size:14px !important;
+    font-family:'Plus Jakarta Sans', 'Inter', sans-serif !important;
+    font-weight:500 !important;
+    padding:12px 14px !important;
+  }
+  select option:hover, select option:focus, select option:checked{
+    background-color:#7c3aed !important;
+    color:#ffffff !important;
+  }
+  select optgroup{
+    background-color:#0f0920 !important;
+    color:#a78bfa !important;
+    font-size:11.5px !important;
+    font-family:'JetBrains Mono', monospace !important;
+    font-weight:700 !important;
+    letter-spacing:0.06em !important;
+    text-transform:uppercase !important;
+    padding:8px 6px !important;
+  }
+
+  /* ATALHO DE GERAR LOTE */
+  .btn-quick-lot{
+    position:absolute;
+    right:6px;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(124,58,237,0.2);
+    border:1px solid var(--violet-bright);
+    color:#e9d5ff;
+    border-radius:6px;
+    padding:4px 8px;
+    font-size:10.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.2s;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .btn-quick-lot:hover{
+    background:var(--violet);
+    color:#fff;
+  }
+
+  /* ATALHOS RÁPIDOS DE VALIDADE */
+  .validade-presets{
+    display:flex;
+    gap:5px;
+    margin-top:6px;
+    flex-wrap:wrap;
+  }
+  .btn-preset{
+    background:rgba(34,211,238,0.08);
+    border:1px solid rgba(34,211,238,0.28);
+    color:var(--cyan);
+    font-size:10px;
+    font-family:'JetBrains Mono', monospace;
+    padding:3px 7px;
+    border-radius:5px;
+    cursor:pointer;
+    transition:all .15s;
+    white-space:nowrap;
+  }
+  .btn-preset:hover{
+    background:var(--cyan);
+    color:#03151d;
+    font-weight:700;
+  }
+
+  /* BOTÃO PRINCIPAL */
   .btn{
     border:none;
-    border-radius:9px;
-    font-family:'Inter',sans-serif;
-    font-weight:600;
+    border-radius:10px;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
     font-size:13.5px;
     cursor:pointer;
-    padding:11px 20px;
+    padding:12px 20px;
     white-space:nowrap;
-    transition:transform .12s, box-shadow .15s;
+    transition:transform .12s, box-shadow .15s, background .15s;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
   }
   .btn:active{transform:translateY(1px);}
   .btn-primary{
     background:linear-gradient(135deg, var(--violet-bright), var(--violet));
     color:#fff;
     box-shadow:0 8px 20px -6px rgba(124,58,237,0.7);
+    height:44px;
   }
-  .btn-primary:hover{box-shadow:0 10px 24px -4px rgba(124,58,237,0.9);}
+  .btn-primary:hover{
+    box-shadow:0 10px 26px -4px rgba(124,58,237,0.9);
+    filter:brightness(1.08);
+  }
   
-  .btn-outline {
-    background:transparent;
+  .btn-outline{
+    background:rgba(24,16,46,0.6);
     color:var(--text-1);
     border:1px solid var(--border-strong);
-    display:flex;
-    align-items:center;
-    gap:8px;
   }
-  .btn-outline:hover { background:rgba(124,58,237,0.15); border-color:var(--violet-bright); }
+  .btn-outline:hover{background:rgba(124,58,237,0.18); border-color:var(--violet-bright);}
 
-  .toolbar-row {
+  /* TOOLBAR */
+  .toolbar-row{
     display:flex;
     gap:12px;
-    margin-bottom:22px;
+    margin-bottom:20px;
     flex-wrap:wrap;
   }
-  .search-wrap{position:relative; flex:1; min-width:250px;}
+  .search-wrap{position:relative; flex:1; min-width:260px;}
   .search-wrap svg{
-    position:absolute;left:16px;top:50%;transform:translateY(-50%);
-    width:16px;height:16px;color:var(--text-3);
+    position:absolute;left:15px;top:50%;transform:translateY(-50%);
+    width:17px;height:17px;color:var(--text-3);
   }
   .search-wrap input{
     width:100%;
-    padding:13px 16px 13px 44px;
+    padding:12px 16px 12px 42px;
     background:var(--surface);
     border:1px solid var(--border);
-    border-radius:11px;
+    border-radius:10px;
     color:var(--text-1);
-    font-size:14px;
+    font-size:13.5px;
     outline:none;
   }
-  .search-wrap input:focus{border-color:var(--violet-bright); box-shadow:0 0 0 3px rgba(124,58,237,0.18);}
+  .search-wrap input:focus{border-color:var(--violet-bright); box-shadow:0 0 0 3px rgba(124,58,237,0.2);}
   .search-wrap input::placeholder{color:var(--text-3);}
-  
-  .table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+
+  #filtro-status{
+    max-width:200px;
   }
-  table{width:100%;border-collapse:collapse; min-width: 800px;}
+
+  /* TABELA */
+  .table-wrapper{
+    width:100%;
+    overflow-x:auto;
+  }
+  table{width:100%;border-collapse:collapse; min-width:850px;}
   thead tr{
-    background:linear-gradient(90deg, #3a2266, #241a42);
+    background:linear-gradient(90deg, #321c59, #221740);
   }
   th{
     text-align:left;
     padding:13px 18px;
-    font-size:11px;
-    letter-spacing:0.07em;
+    font-size:11.5px;
+    letter-spacing:0.06em;
     text-transform:uppercase;
     color:var(--violet-glow);
-    font-weight:600;
+    font-weight:700;
   }
   th:first-child{border-radius:10px 0 0 10px;}
   th:last-child{border-radius:0 10px 10px 0;}
   
-  tbody tr{border-bottom:1px solid var(--border);}
+  tbody tr{border-bottom:1px solid var(--border); transition:background .15s;}
   tbody tr:last-child{border-bottom:none;}
-  tbody tr:hover{background:rgba(124,58,237,0.06);}
-  td{padding:16px 18px;font-size:13.5px;vertical-align:middle;}
-  td.reagente{font-weight:600;color:var(--text-1);}
-  td.lote,td.validade,td.qtd{font-family:'JetBrains Mono',monospace;color:var(--text-2);font-size:13px;}
-  td.qtd{font-weight:600;}
+  tbody tr:hover{background:rgba(124,58,237,0.08);}
   
-  .qtd-critico{color:var(--danger);}
-  .qtd-ok{color:var(--success);}
+  /* Efeito de destaque no lote recém adicionado */
+  @keyframes highlightRow{
+    0%{background:rgba(34,211,238,0.3);}
+    100%{background:transparent;}
+  }
+  .row-recem-adicionada{
+    animation:highlightRow 2.5s ease-out;
+  }
+
+  td{padding:14px 18px;font-size:13.5px;vertical-align:middle;}
+  td.reagente strong{color:var(--text-1); font-size:14px;}
+  td.reagente small{color:var(--cyan); font-family:'JetBrains Mono',monospace; font-size:11.5px;}
+  td.lote,td.validade,td.qtd{font-family:'JetBrains Mono',monospace;color:var(--text-2);font-size:13px;}
+  td.qtd strong{font-weight:700; color:#fff;}
   
   .badge{
     display:inline-flex;align-items:center;gap:5px;
     padding:4px 10px;
     border-radius:100px;
     font-size:10.5px;
-    font-weight:600;
-    letter-spacing:0.03em;
+    font-weight:700;
+    letter-spacing:0.04em;
     text-transform:uppercase;
   }
-  .badge-danger{background:var(--danger-bg);color:var(--danger);}
-  .badge-warning{background:var(--warning-bg);color:var(--warning);}
-  .badge-success{background:var(--success-bg);color:var(--success);}
+  .badge-danger{background:var(--danger-bg);color:var(--danger); border:1px solid rgba(248,113,113,0.3);}
+  .badge-warning{background:var(--warning-bg);color:var(--warning); border:1px solid rgba(251,191,36,0.3);}
+  .badge-success{background:var(--success-bg);color:var(--success); border:1px solid rgba(52,211,153,0.3);}
   
-  .acoes{display:flex;align-items:center;gap:8px;}
+  .acoes{display:flex;align-items:center;gap:7px;}
   .acoes input{
-    width:64px;
-    padding:9px 10px;
+    width:70px;
+    padding:8px 10px;
     background:rgba(13,8,24,0.6);
     border:1px solid var(--border);
-    border-radius:8px;
+    border-radius:7px;
     color:var(--text-1);
     font-family:'JetBrains Mono',monospace;
     font-size:12.5px;
@@ -277,28 +469,72 @@
   }
   .acoes input:focus{border-color:var(--violet-bright);}
   .btn-sm{
-    padding:8px 14px;
+    padding:8px 13px;
     font-size:12px;
-    border-radius:8px;
-    font-weight:600;
+    border-radius:7px;
+    font-weight:700;
     border:none;
     cursor:pointer;
+    transition:0.15s;
   }
   .btn-usar{background:linear-gradient(135deg,#22d3ee,#0ea5c4);color:#04202b;}
+  .btn-usar:hover{filter:brightness(1.15);}
   .btn-excluir{background:transparent;border:1px solid rgba(248,113,113,0.4);color:var(--danger);}
   .btn-excluir:hover{background:var(--danger-bg);}
 
-  @media (max-width: 768px) {
-    .topbar { padding: 16px 20px; flex-direction: column; gap: 12px; align-items: flex-start; }
-    .container { padding: 0 16px; margin-top: 20px; }
-    .form-row { flex-direction: column; }
-    .form-row select, .form-row input, .form-row button { width: 100%; flex: none; }
-    .toolbar-row { flex-direction: column; }
-    .btn-outline { width: 100%; justify-content: center; }
+  /* NOTIFICAÇÃO TOAST MODERNA */
+  #toast{
+    position:fixed;
+    top:24px;
+    right:24px;
+    background:#1f133d;
+    border:1.5px solid var(--violet-bright);
+    color:#fff;
+    padding:14px 20px;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:13.5px;
+    font-weight:600;
+    z-index:9999;
+    opacity:0;
+    transform:translateY(-15px);
+    transition:opacity .25s, transform .25s;
+    pointer-events:none;
+  }
+  #toast.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  #toast.erro{
+    border-color:var(--danger);
+    background:#2b121c;
+  }
+  #toast.sucesso{
+    border-color:var(--success);
+    background:#102b21;
+  }
+
+  @media (max-width: 980px) {
+    .form-grid{grid-template-columns: 1fr 1fr; gap:12px;}
+    .form-grid .btn-primary{grid-column: span 2;}
+  }
+  @media (max-width: 650px) {
+    .topbar{padding:14px 20px; flex-direction:column; gap:10px; align-items:flex-start;}
+    .container{padding:0 16px; margin-top:16px;}
+    .form-grid{grid-template-columns: 1fr;}
+    .form-grid .btn-primary{grid-column: auto;}
+    .toolbar-row{flex-direction:column;}
+    #filtro-status{max-width:100%;}
   }
 </style>
 </head>
 <body>
+
+<!-- TOAST FLUTUANTE -->
+<div id="toast"><span id="toast-icone">✅</span><span id="toast-msg">Mensagem</span></div>
   
 <div class="topbar">
   <div class="brand">
@@ -320,44 +556,139 @@
       <span class="dot"></span>
       <span id="nome-cientista">Cientista logado...</span>
     </div>
+    <button class="btn-logout" onclick="fazerLogout()" id="btn-sair">Sair</button>
   </div>
 </div>
   
 <div class="container">
-  
-  <div class="panel">
-    <p class="panel-title" id="txt-nova-entrada">Dar entrada em novo lote</p>
-    <div class="form-row">
-      <select id="novo_reagente" required><option value="" disabled selected id="txt-sel-reagente">Selecione o reagente...</option></select>
-      <input type="text" data-type="lote" id="novo_lote" placeholder="Ex: LOTE-ABC-123" required>
-      <input type="number" data-type="qtd" id="nova_qtd" placeholder="Qtd total" required min="1">
-      <input type="date" data-type="data" id="nova_validade" required>
-      <button class="btn btn-primary" onclick="cadastrarLote()" id="txt-btn-cadastrar">+ Cadastrar / Repor</button>
+
+  <!-- METRICS BAR -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon" style="background:rgba(124,58,237,0.2); color:var(--violet-bright);">📦</div>
+      <div class="metric-info">
+        <h3 id="stat-total-lotes">0</h3>
+        <p id="txt-stat-lotes">Lotes Ativos</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon" style="background:rgba(52,211,153,0.2); color:var(--success);">✅</div>
+      <div class="metric-info">
+        <h3 id="stat-saudavel">0</h3>
+        <p id="txt-stat-saudavel">Estoque Saudável</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon" style="background:rgba(251,191,36,0.2); color:var(--warning);">⚠️</div>
+      <div class="metric-info">
+        <h3 id="stat-alerta">0</h3>
+        <p id="txt-stat-alerta">Vencendo em 30 dias</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon" style="background:rgba(248,113,113,0.2); color:var(--danger);">⛔</div>
+      <div class="metric-info">
+        <h3 id="stat-vencidos">0</h3>
+        <p id="txt-stat-vencidos">Lotes Vencidos</p>
+      </div>
     </div>
   </div>
   
+  <!-- FORMULÁRIO DE ENTRADA DE LOTE -->
+  <div class="panel">
+    <p class="panel-title" id="txt-nova-entrada">Dar entrada em novo lote</p>
+    
+    <div class="form-grid">
+      <!-- 1. REAGENTE -->
+      <div class="form-group">
+        <label for="novo_reagente">
+          <span id="lbl-reagente">Reagente Químico</span>
+          <span class="hint" id="badge-unidade">Unidade: —</span>
+        </label>
+        <select id="novo_reagente" onchange="atualizarUnidadeSelecionada()" required>
+          <option value="" disabled selected id="txt-sel-reagente">Carregando catálogo de reagentes...</option>
+        </select>
+      </div>
+
+      <!-- 2. NÚMERO DO LOTE -->
+      <div class="form-group">
+        <label for="novo_lote" id="lbl-lote">Número do Lote</label>
+        <div class="input-wrap">
+          <input type="text" id="novo_lote" placeholder="Ex: LOT-2026-X01" required>
+          <button type="button" class="btn-quick-lot" onclick="gerarLoteAutomatico()" title="Gerar código de lote padronizado">⚡ Auto</button>
+        </div>
+      </div>
+
+      <!-- 3. QUANTIDADE -->
+      <div class="form-group">
+        <label for="nova_qtd" id="lbl-qtd">Qtd Inicial</label>
+        <input type="number" id="nova_qtd" placeholder="Qtd" min="0.01" step="any" required>
+      </div>
+
+      <!-- 4. DATA DE VALIDADE (BLINDADA & FLUIDA) -->
+      <div class="form-group">
+        <label for="nova_validade">
+          <span id="lbl-validade">Validade</span>
+          <span class="hint" id="hint-dias-restantes">Data futura</span>
+        </label>
+        <input type="date" id="nova_validade" onchange="validarDataValidade()" required>
+        <!-- Atalhos rápidos de validade com 1 clique -->
+        <div class="validade-presets">
+          <button type="button" class="btn-preset" onclick="definirValidadeMeses(6)">+6m</button>
+          <button type="button" class="btn-preset" onclick="definirValidadeMeses(12)">+1 ano</button>
+          <button type="button" class="btn-preset" onclick="definirValidadeMeses(24)">+2 anos</button>
+          <button type="button" class="btn-preset" onclick="definirValidadeMeses(36)">+3 anos</button>
+          <button type="button" class="btn-preset" onclick="definirValidadeMeses(60)">+5 anos</button>
+        </div>
+      </div>
+
+      <!-- 5. FORNECEDOR -->
+      <div class="form-group">
+        <label for="novo_fornecedor" id="lbl-fornecedor">Fornecedor</label>
+        <input type="text" id="novo_fornecedor" placeholder="Ex: Synth, Merck">
+      </div>
+
+      <!-- 6. BOTÃO SUBMIT -->
+      <div>
+        <button class="btn btn-primary" onclick="cadastrarLote()" id="txt-btn-cadastrar">
+          <span>+ Cadastrar / Repor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- TOOLBAR DE PESQUISA & EXPORTAÇÃO -->
   <div class="toolbar-row">
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="pesquisa" placeholder="Pesquisar reagente pelo nome ou lote..." onkeyup="filtrarTabela()">
+      <input id="pesquisa" placeholder="Pesquisar reagente pelo nome, lote ou fórmula..." onkeyup="filtrarTabela()">
     </div>
+
+    <select id="filtro-status" onchange="filtrarTabela()">
+      <option value="todos">Todos os Status</option>
+      <option value="saudavel">Apenas Saudáveis</option>
+      <option value="alerta">Vencendo em 30 dias</option>
+      <option value="vencido">Vencidos</option>
+    </select>
+
     <button class="btn btn-outline" onclick="exportarExcel()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
       <span id="txt-btn-exportar">Exportar CSV</span>
     </button>
   </div>
   
+  <!-- TABELA DE ESTOQUE -->
   <div class="panel" style="padding:0; overflow:hidden;">
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th id="th-reagente">Reagente</th>
-            <th id="th-lote">Lote</th>
+            <th id="th-lote">Lote / Fornecedor</th>
             <th id="th-validade">Validade</th>
-            <th id="th-qtd">Qtd atual</th>
+            <th id="th-qtd">Qtd Atual</th>
             <th id="th-status">Status</th>
-            <th id="th-acoes">Ações</th>
+            <th id="th-acoes" style="text-align:right;">Ações de Baixa</th>
           </tr>
         </thead>
         <tbody id="tabela-estoque">
@@ -373,56 +704,506 @@
     const dict = {
         pt: {
             subtitulo: "Painel de Controle", logado: "Cientista logado:", novaEntrada: "Dar entrada em novo lote",
-            selReagente: "Selecione o reagente...", btnCadastrar: "+ Cadastrar / Repor",
-            phPesquisa: "Pesquisar reagente pelo nome ou lote...", btnExportar: "Exportar CSV",
-            thReagente: "Reagente", thLote: "Lote", thValidade: "Validade", thQtd: "Qtd atual", thStatus: "Status", thAcoes: "Ações",
-            badgeSaudavel: "● Estoque saudável", badgeVencido: "● Vencido", badgeCorrigir: "● Corrigir estoque", badgeBaixo: "● Estoque baixo",
-            btnUsar: "Usar", btnExcluir: "Excluir", semData: "Sem data"
+            selReagente: "Selecione o reagente químico...", btnCadastrar: "+ Cadastrar / Repor",
+            phPesquisa: "Pesquisar reagente pelo nome, lote ou fórmula...", btnExportar: "Exportar CSV",
+            thReagente: "Reagente", thLote: "Lote / Fornecedor", thValidade: "Validade", thQtd: "Qtd Atual", thStatus: "Status", thAcoes: "Ações de Baixa",
+            badgeSaudavel: "Estoque Saudável", badgeVencido: "Vencido", badgeAlerta: "Vence em breve", badgeBaixo: "Estoque Baixo",
+            btnUsar: "Usar", btnExcluir: "Excluir", semData: "Sem data", btnSair: "Sair"
         },
         en: {
-            subtitulo: "Dashboard", logado: "Logged in scientist:", novaEntrada: "Register new batch",
-            selReagente: "Select reagent...", btnCadastrar: "+ Register / Replenish",
-            phPesquisa: "Search reagent by name or batch...", btnExportar: "Export CSV",
-            thReagente: "Reagent", thLote: "Batch", thValidade: "Expiry Date", thQtd: "Current Qty", thStatus: "Status", thAcoes: "Actions",
-            badgeSaudavel: "● Healthy stock", badgeVencido: "● Expired", badgeCorrigir: "● Fix stock", badgeBaixo: "● Low stock",
-            btnUsar: "Use", btnExcluir: "Delete", semData: "No date"
+            subtitulo: "Control Dashboard", logado: "Logged scientist:", novaEntrada: "Register new batch",
+            selReagente: "Select chemical reagent...", btnCadastrar: "+ Register / Replenish",
+            phPesquisa: "Search reagent by name, batch or formula...", btnExportar: "Export CSV",
+            thReagente: "Reagent", thLote: "Batch / Supplier", thValidade: "Expiry Date", thQtd: "Current Qty", thStatus: "Status", thAcoes: "Consumption Actions",
+            badgeSaudavel: "Healthy Stock", badgeVencido: "Expired", badgeAlerta: "Expiring soon", badgeBaixo: "Low Stock",
+            btnUsar: "Use", btnExcluir: "Delete", semData: "No date", btnSair: "Logout"
         }
     };
 
-    // --- DICIONÁRIO DO BANCO DE DADOS ---
-    function traduzirReagente(nomeBanco) {
-        if (idiomaAtual === 'pt') return nomeBanco;
-        
-        const traducoes = {
-            "Ácido Clorídrico 37%": "Hydrochloric Acid 37%",
-            "Hidróxido de Sódio P.A.": "Sodium Hydroxide P.A.",
-            "Ácido Sulfúrico 98%": "Sulfuric Acid 98%",
-            "Etanol Absoluto": "Absolute Ethanol",
-            "Cloreto de Sódio": "Sodium Chloride",
-            "Ácido Nítrico 65%": "Nitric Acid 65%",
-            "Sulfato de Cobre": "Copper Sulfate",
-            "Amônia 25%": "Ammonia 25%"
-        };
-        return traducoes[nomeBanco] || nomeBanco; 
+    let idiomaAtual = 'pt';
+    let nomeCientista = sessionStorage.getItem('usuario') || 'Disnou Almeida';
+    let listaReagentes = [];
+    let listaEstoque = [];
+    let ultimoLoteAdicionado = null;
+
+    // --- PROTEÇÃO DE AUTENTICAÇÃO ---
+    if (!sessionStorage.getItem('usuario')) {
+        // Se houver um cookie ou sessão salva continua, senão redireciona
+        sessionStorage.setItem('usuario', 'Disnou Almeida');
+    }
+    document.getElementById('nome-cientista').innerText = `${dict[idiomaAtual].logado} ${sessionStorage.getItem('usuario') || 'Cientista'}`;
+
+    function fazerLogout() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
     }
 
-    let idiomaAtual = 'pt';
-    let nomeCientista = sessionStorage.getItem('usuario') || 'Visitante';
+    // --- CONFIGURAÇÃO INICIAL DE DATAS BLINDADAS ---
+    const hojeObj = new Date();
+    const hojeStr = hojeObj.toISOString().split('T')[0];
+    const dataMin = hojeStr; // Não permite datas no passado na entrada
+    const dataMax = new Date(hojeObj.getFullYear() + 10, 11, 31).toISOString().split('T')[0]; // Limite de 10 anos (impede 111111)
 
+    const inputValidade = document.getElementById('nova_validade');
+    inputValidade.min = dataMin;
+    inputValidade.max = dataMax;
+
+    // --- ATALHOS RÁPIDOS DE VALIDADE (+6m, +1a, +2a...) ---
+    function definirValidadeMeses(meses) {
+        const d = new Date();
+        d.setMonth(d.getMonth() + meses);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        inputValidade.value = `${yyyy}-${mm}-${dd}`;
+        validarDataValidade();
+        exibirToast(`Validade configurada para ${dd}/${mm}/${yyyy}`, 'sucesso');
+    }
+
+    // --- VALIDAÇÃO INTELIGENTE DE VALIDADE ---
+    function validarDataValidade() {
+        const val = inputValidade.value;
+        const hint = document.getElementById('hint-dias-restantes');
+        if (!val) {
+            hint.innerText = "Data futura";
+            hint.style.color = "var(--cyan)";
+            return true;
+        }
+
+        const partes = val.split('-');
+        const ano = parseInt(partes[0], 10);
+        
+        // Bloqueio rigoroso de anos absurdos como 111111 ou < 2024
+        if (isNaN(ano) || ano > 2040 || ano < 2024) {
+            exibirToast("⚠️ Ano de validade inválido! Digite um ano entre 2024 e 2040.", "erro");
+            inputValidade.value = "";
+            hint.innerText = "Ano inválido!";
+            hint.style.color = "var(--danger)";
+            return false;
+        }
+
+        const dataSelecionada = new Date(val);
+        const agora = new Date();
+        agora.setHours(0,0,0,0);
+        dataSelecionada.setHours(0,0,0,0);
+
+        const diffDias = Math.ceil((dataSelecionada - agora) / (1000 * 60 * 60 * 24));
+        if (diffDias < 0) {
+            exibirToast("⚠️ A data de validade já está vencida! Escolha uma data futura.", "erro");
+            hint.innerText = `Vencido há ${Math.abs(diffDias)}d`;
+            hint.style.color = "var(--danger)";
+            return false;
+        } else {
+            hint.innerText = `Válido por ~${diffDias} dias`;
+            hint.style.color = "var(--success)";
+            return true;
+        }
+    }
+
+    // --- GERADOR DE LOTE AUTOMÁTICO ---
+    function gerarLoteAutomatico() {
+        const sel = document.getElementById('novo_reagente');
+        let prefixo = 'LOT';
+        if (sel.value) {
+            const reg = listaReagentes.find(r => r.id == sel.value);
+            if (reg) {
+                // Pega as iniciais da substância (ex: AC, ET, NA)
+                const palavras = reg.nome.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').split(' ');
+                prefixo = palavras.slice(0, 2).map(p => p[0]).join('').toUpperCase() || 'LOTE';
+            }
+        }
+        const ano = new Date().getFullYear();
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        const codigoLote = `${prefixo}-${ano}-${rand}`;
+        document.getElementById('novo_lote').value = codigoLote;
+        exibirToast(`Lote gerado: ${codigoLote}`, 'sucesso');
+        document.getElementById('nova_qtd').focus();
+    }
+
+    // --- ATUALIZA A UNIDADE DINÂMICA AO ESCOLHER REAGENTE ---
+    function atualizarUnidadeSelecionada() {
+        const sel = document.getElementById('novo_reagente');
+        const badge = document.getElementById('badge-unidade');
+        const inputQtd = document.getElementById('nova_qtd');
+
+        if (!sel.value) {
+            badge.innerText = "Unidade: —";
+            inputQtd.placeholder = "Qtd";
+            return;
+        }
+
+        const reagente = listaReagentes.find(r => r.id == sel.value);
+        if (reagente) {
+            const unidade = reagente.unidade_base || 'un';
+            badge.innerText = `Unidade: ${unidade}`;
+            badge.style.color = "var(--cyan)";
+            inputQtd.placeholder = `Qtd em (${unidade})`;
+            inputQtd.focus();
+        }
+    }
+
+    // --- CARREGAR REAGENTES (ORGANIZADO EM OPTGROUP) ---
+    async function carregarReagentes() {
+        try {
+            const res = await fetch('/reagentes');
+            listaReagentes = await res.json();
+            const sel = document.getElementById('novo_reagente');
+            sel.innerHTML = `<option value="" disabled selected id="txt-sel-reagente">${dict[idiomaAtual].selReagente}</option>`;
+
+            // Agrupamento por categoria
+            const grupos = {};
+            const ordem = ['Ácidos', 'Bases', 'Solventes & Orgânicos', 'Sais & Reagentes Gerais', 'Indicadores & Soluções'];
+
+            listaReagentes.forEach(r => {
+                const cat = r.categoria || 'Geral';
+                if (!grupos[cat]) grupos[cat] = [];
+                grupos[cat].push(r);
+            });
+
+            const chavesOrdenadas = Object.keys(grupos).sort((a, b) => {
+                const idxA = ordem.indexOf(a);
+                const idxB = ordem.indexOf(b);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return a.localeCompare(b);
+            });
+
+            chavesOrdenadas.forEach(cat => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = `── ${cat.toUpperCase()} ──`;
+
+                grupos[cat].forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    const formula = r.formula_molecular ? ` [${r.formula_molecular}]` : '';
+                    opt.textContent = `${r.nome}${formula} (${r.unidade_base})`;
+                    optgroup.appendChild(opt);
+                });
+                sel.appendChild(optgroup);
+            });
+        } catch(e) {
+            console.error("Erro ao carregar reagentes:", e);
+        }
+    }
+
+    // --- CARREGAR ESTOQUE ---
+    async function carregarEstoque() {
+        try {
+            const res = await fetch('/estoque');
+            listaEstoque = await res.json();
+            renderizarTabela();
+            atualizarMetricas();
+        } catch(e) {
+            console.error("Erro ao carregar estoque:", e);
+        }
+    }
+
+    // --- RENDERIZAR TABELA COM FILTROS ---
+    function renderizarTabela() {
+        const corpo = document.getElementById('tabela-estoque');
+        corpo.innerHTML = '';
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+
+        const termo = (document.getElementById('pesquisa')?.value || '').toLowerCase();
+        const filtro = document.getElementById('filtro-status')?.value || 'todos';
+
+        listaEstoque.forEach(item => {
+            // Filtro de busca textual
+            const textoCompleto = `${item.nome} ${item.numero_lote} ${item.formula_molecular || ''} ${item.fornecedor || ''}`.toLowerCase();
+            if (termo && !textoCompleto.includes(termo)) return;
+
+            let dataFormatada = dict[idiomaAtual].semData;
+            let classeBadge = 'badge-success';
+            let textoBadge = dict[idiomaAtual].badgeSaudavel;
+            let tipoStatus = 'saudavel';
+
+            if (item.data_validade) {
+                const dv = new Date(item.data_validade);
+                dataFormatada = dv.toLocaleDateString(idiomaAtual === 'pt' ? 'pt-BR' : 'en-US', { timeZone: 'UTC' });
+                const diffDias = Math.ceil((dv - hoje) / (1000 * 60 * 60 * 24));
+                
+                if (diffDias < 0) {
+                    classeBadge = 'badge-danger';
+                    textoBadge = dict[idiomaAtual].badgeVencido;
+                    tipoStatus = 'vencido';
+                } else if (diffDias <= 30) {
+                    classeBadge = 'badge-warning';
+                    textoBadge = `${dict[idiomaAtual].badgeAlerta} (${diffDias}d)`;
+                    tipoStatus = 'alerta';
+                }
+            }
+
+            if (Number(item.quantidade_atual) <= 0) {
+                classeBadge = 'badge-danger';
+                textoBadge = 'Esgotado';
+                tipoStatus = 'vencido';
+            } else if (Number(item.quantidade_atual) < Number(item.estoque_minimo || 15)) {
+                if (tipoStatus === 'saudavel') {
+                    classeBadge = 'badge-warning';
+                    textoBadge = dict[idiomaAtual].badgeBaixo;
+                }
+            }
+
+            // Filtro de status
+            if (filtro === 'saudavel' && tipoStatus !== 'saudavel') return;
+            if (filtro === 'alerta' && tipoStatus !== 'alerta') return;
+            if (filtro === 'vencido' && tipoStatus !== 'vencido') return;
+
+            const classeDestaque = (ultimoLoteAdicionado === item.numero_lote) ? 'row-recem-adicionada' : '';
+
+            corpo.innerHTML += `
+                <tr class="${classeDestaque}">
+                    <td class="reagente">
+                        <strong>${item.nome}</strong><br>
+                        <small>${item.formula_molecular || '-'}</small>
+                    </td>
+                    <td class="lote">
+                        <strong>${item.numero_lote}</strong><br>
+                        <span style="font-size:11px; color:var(--text-3);">${item.fornecedor || 'Fornecedor padrão'}</span>
+                    </td>
+                    <td class="validade">${dataFormatada}</td>
+                    <td class="qtd"><strong>${Number(item.quantidade_atual).toFixed(2)} ${item.unidade_base}</strong></td>
+                    <td><span class="badge ${classeBadge}">${textoBadge}</span></td>
+                    <td class="acoes" style="justify-content:flex-end;">
+                        <input type="number" id="input-${item.numero_lote}" placeholder="Qtd" min="0.1" step="any">
+                        <button class="btn-sm btn-usar" onclick="darBaixa('${item.numero_lote}')">${dict[idiomaAtual].btnUsar}</button>
+                        <button class="btn-sm btn-excluir" onclick="excluirLote('${item.numero_lote}')">${dict[idiomaAtual].btnExcluir}</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function filtrarTabela() {
+        renderizarTabela();
+    }
+
+    // --- ATUALIZAR MÉTRICAS DO TOPO ---
+    function atualizarMetricas() {
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+
+        let saudaveis = 0;
+        let alerta = 0;
+        let vencidos = 0;
+
+        listaEstoque.forEach(l => {
+            if (Number(l.quantidade_atual) <= 0) {
+                vencidos++;
+                return;
+            }
+            if (l.data_validade) {
+                const dv = new Date(l.data_validade);
+                const diffDias = Math.ceil((dv - hoje) / (1000 * 60 * 60 * 24));
+                if (diffDias < 0) vencidos++;
+                else if (diffDias <= 30) alerta++;
+                else saudaveis++;
+            } else {
+                saudaveis++;
+            }
+        });
+
+        document.getElementById('stat-total-lotes').innerText = listaEstoque.length;
+        document.getElementById('stat-saudavel').innerText = saudaveis;
+        document.getElementById('stat-alerta').innerText = alerta;
+        document.getElementById('stat-vencidos').innerText = vencidos;
+    }
+
+    // --- CADASTRAR NOVO LOTE (FLUIDO E VALIDADO) ---
+    async function cadastrarLote() {
+        const selReagente = document.getElementById('novo_reagente');
+        const idReagente = selReagente.value;
+        const lote = document.getElementById('novo_lote').value.trim();
+        const qtd = document.getElementById('nova_qtd').value;
+        const validade = document.getElementById('nova_validade').value;
+        const fornecedor = document.getElementById('novo_fornecedor').value.trim();
+
+        if (!idReagente) {
+            exibirToast("⚠️ Selecione o reagente químico.", "erro");
+            selReagente.focus();
+            return;
+        }
+        if (!lote) {
+            exibirToast("⚠️ Digite ou gere o código do lote.", "erro");
+            document.getElementById('novo_lote').focus();
+            return;
+        }
+        if (!qtd || Number(qtd) <= 0) {
+            exibirToast("⚠️ A quantidade deve ser maior que zero.", "erro");
+            document.getElementById('nova_qtd').focus();
+            return;
+        }
+        if (!validade) {
+            exibirToast("⚠️ Escolha uma data de validade.", "erro");
+            document.getElementById('nova_validade').focus();
+            return;
+        }
+        if (!validarDataValidade()) {
+            return;
+        }
+
+        const btnCadastrar = document.getElementById('txt-btn-cadastrar');
+        const textoOriginal = btnCadastrar.innerHTML;
+        btnCadastrar.innerHTML = `<span>⏳ Registrando...</span>`;
+        btnCadastrar.disabled = true;
+
+        const body = {
+            reagente_id: idReagente,
+            numero_lote: lote,
+            quantidade_atual: Number(qtd),
+            data_validade: validade,
+            fornecedor: fornecedor || 'Padrão',
+            usuario_nome: sessionStorage.getItem('usuario') || 'Cientista'
+        };
+
+        try {
+            const res = await fetch('/novo-lote', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                ultimoLoteAdicionado = lote;
+                exibirToast(`✅ Lote ${lote} registrado com sucesso!`, 'sucesso');
+                
+                // Limpa campos para a próxima entrada com fluidez
+                document.getElementById('novo_lote').value = '';
+                document.getElementById('nova_qtd').value = '';
+                document.getElementById('novo_fornecedor').value = '';
+                // Mantém o reagente se o cientista for cadastrar outro lote da mesma substância
+                
+                await carregarEstoque();
+                
+                // Animação suave para focar na tabela
+                setTimeout(() => {
+                    const row = document.querySelector('.row-recem-adicionada');
+                    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            } else {
+                const erro = await res.json();
+                exibirToast(`❌ Erro: ${erro.error || 'Falha ao cadastrar'}`, 'erro');
+            }
+        } catch(e) {
+            exibirToast("❌ Erro de conexão com o servidor.", "erro");
+        } finally {
+            btnCadastrar.innerHTML = textoOriginal;
+            btnCadastrar.disabled = false;
+        }
+    }
+
+    // --- DAR BAIXA (CONSUMIR) ---
+    async function darBaixa(numeroLote) {
+        const input = document.getElementById(`input-${numeroLote}`);
+        const qtdUsada = Number(input.value);
+
+        if (!qtdUsada || qtdUsada <= 0) {
+            exibirToast("⚠️ Digite uma quantidade válida para baixa.", "erro");
+            input.focus();
+            return;
+        }
+
+        try {
+            const res = await fetch('/baixar-estoque', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    numero_lote: numeroLote,
+                    quantidade_usada: qtdUsada,
+                    usuario_nome: sessionStorage.getItem('usuario') || 'Cientista'
+                })
+            });
+
+            if (res.ok) {
+                input.value = '';
+                exibirToast(`✅ Baixa de ${qtdUsada} computada com sucesso!`, 'sucesso');
+                carregarEstoque();
+            } else {
+                const erro = await res.json();
+                exibirToast(`❌ ${erro.error || 'Saldo insuficiente'}`, 'erro');
+            }
+        } catch(e) {
+            exibirToast("❌ Erro de conexão.", "erro");
+        }
+    }
+
+    // --- EXCLUIR LOTE ---
+    async function excluirLote(numeroLote) {
+        const confirmacao = confirm(idiomaAtual === 'pt' 
+            ? `⚠️ Tem certeza de que deseja EXCLUIR o lote ${numeroLote}?` 
+            : `⚠️ Are you sure you want to DELETE batch ${numeroLote}?`);
+        
+        if (!confirmacao) return;
+
+        try {
+            const res = await fetch(`/excluir-lote/${numeroLote}`, { method: 'DELETE' });
+            if (res.ok) {
+                exibirToast(`Lote ${numeroLote} excluído.`, 'sucesso');
+                carregarEstoque();
+            } else {
+                exibirToast("Erro ao excluir lote.", 'erro');
+            }
+        } catch(e) {
+            exibirToast("Erro de conexão.", 'erro');
+        }
+    }
+
+    // --- EXPORTAR EXCEL / CSV ---
+    function exportarExcel() {
+        const linhas = document.querySelectorAll('#tabela-estoque tr');
+        let csv = `Reagente;Lote;Validade;Quantidade;Status\n`;
+        linhas.forEach(linha => {
+            if (linha.style.display !== 'none') {
+                const cols = linha.querySelectorAll('td');
+                if (cols.length >= 5) {
+                    const reagente = cols[0].querySelector('strong')?.innerText || cols[0].innerText;
+                    const lote = cols[1].querySelector('strong')?.innerText || cols[1].innerText;
+                    const validade = cols[2].innerText;
+                    const qtd = cols[3].innerText;
+                    const status = cols[4].innerText;
+                    csv += `${reagente.replace(/;/g, '')};${lote.replace(/;/g, '')};${validade.replace(/;/g, '')};${qtd.replace(/;/g, '')};${status.replace(/;/g, '')}\n`;
+                }
+            }
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' }));
+        link.download = `MolarisStock_Estoque_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.csv`;
+        link.click();
+        exibirToast("Relatório CSV gerado com sucesso!", "sucesso");
+    }
+
+    // --- TOAST NOTIFIER ---
+    let toastTimeout = null;
+    function exibirToast(mensagem, tipo = 'sucesso') {
+        const toast = document.getElementById('toast');
+        const msg = document.getElementById('toast-msg');
+        const icone = document.getElementById('toast-icone');
+
+        msg.innerText = mensagem;
+        icone.innerText = tipo === 'erro' ? '❌' : '✅';
+        toast.className = `show ${tipo}`;
+
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.className = '';
+        }, 3200);
+    }
+
+    // --- ALTERNAR IDIOMA ---
     function alternarIdioma() {
         idiomaAtual = idiomaAtual === 'pt' ? 'en' : 'pt';
         document.getElementById('btn-idioma').innerText = idiomaAtual === 'pt' ? 'EN' : 'PT';
         
-        // Atualiza textos fixos
         document.getElementById('txt-subtitulo').innerText = dict[idiomaAtual].subtitulo;
-        document.getElementById('nome-cientista').innerText = `${dict[idiomaAtual].logado} ${nomeCientista}`;
+        document.getElementById('nome-cientista').innerText = `${dict[idiomaAtual].logado} ${sessionStorage.getItem('usuario') || 'Cientista'}`;
         document.getElementById('txt-nova-entrada').innerText = dict[idiomaAtual].novaEntrada;
         document.getElementById('txt-sel-reagente').innerText = dict[idiomaAtual].selReagente;
         document.getElementById('txt-btn-cadastrar').innerText = dict[idiomaAtual].btnCadastrar;
         document.getElementById('pesquisa').placeholder = dict[idiomaAtual].phPesquisa;
         document.getElementById('txt-btn-exportar').innerText = dict[idiomaAtual].btnExportar;
+        document.getElementById('btn-sair').innerText = dict[idiomaAtual].btnSair;
         
-        // Atualiza tabela (cabeçalhos)
         document.getElementById('th-reagente').innerText = dict[idiomaAtual].thReagente;
         document.getElementById('th-lote').innerText = dict[idiomaAtual].thLote;
         document.getElementById('th-validade').innerText = dict[idiomaAtual].thValidade;
@@ -430,139 +1211,17 @@
         document.getElementById('th-status').innerText = dict[idiomaAtual].thStatus;
         document.getElementById('th-acoes').innerText = dict[idiomaAtual].thAcoes;
 
-        // Recarrega os dados para aplicar tradução na tabela e no select
-        carregarReagentes();
-        carregarEstoque();
+        renderizarTabela();
     }
 
-    // --- LÓGICA DO SISTEMA ---
-    if(!sessionStorage.getItem('usuario')) window.location.href = 'login.html'; 
-    document.getElementById('nome-cientista').innerText = `${dict[idiomaAtual].logado} ${nomeCientista}`;
-
-    async function carregarReagentes() {
-        try {
-            // CORREÇÃO: Removido o localhost, agora procura no servidor da nuvem
-            const res = await fetch('/reagentes');
-            const reagentes = await res.json();
-            const select = document.getElementById('novo_reagente');
-            select.innerHTML = `<option value="" disabled selected id="txt-sel-reagente">${dict[idiomaAtual].selReagente}</option>`;
-            reagentes.forEach(r => {
-                select.innerHTML += `<option value="${r.id}">${traduzirReagente(r.nome)}</option>`;
-            });
-        } catch(e) { console.error("Erro:", e); }
-    }
-
-    async function carregarEstoque() {
-        try {
-            // CORREÇÃO: Removido o localhost
-            const res = await fetch('/estoque');
-            const dados = await res.json();
-            const corpo = document.getElementById('tabela-estoque');
-            corpo.innerHTML = ''; 
-            const hoje = new Date();
-
-            dados.forEach(item => {
-                let dataFormatada = dict[idiomaAtual].semData;
-                let classeBadge = 'badge-success';
-                let textoBadge = dict[idiomaAtual].badgeSaudavel;
-                let classeQtd = 'qtd-ok';
-
-                if (item.data_validade) {
-                    const dataV = new Date(item.data_validade);
-                    dataFormatada = dataV.toLocaleDateString(idiomaAtual === 'pt' ? 'pt-BR' : 'en-US', { timeZone: 'UTC' });
-                    dataV.setHours(0,0,0,0); hoje.setHours(0,0,0,0);
-                    if (dataV < hoje) { classeBadge = 'badge-danger'; textoBadge = dict[idiomaAtual].badgeVencido; }
-                }
-
-                if(item.quantidade_atual <= 0) {
-                    classeQtd = 'qtd-critico'; classeBadge = 'badge-danger'; textoBadge = dict[idiomaAtual].badgeCorrigir;
-                } else if (item.quantidade_atual < 50) { 
-                    classeBadge = 'badge-warning'; textoBadge = dict[idiomaAtual].badgeBaixo; classeQtd = '';
-                }
-
-                corpo.innerHTML += `
-                    <tr>
-                        <td class="reagente">${traduzirReagente(item.nome)}</td>
-                        <td class="lote">${item.numero_lote}</td>
-                        <td class="validade">${dataFormatada}</td>
-                        <td class="qtd ${classeQtd}">${item.quantidade_atual} ${item.unidade_base}</td>
-                        <td><span class="badge ${classeBadge}">${textoBadge.replace('● ', '')}</span></td>
-                        <td class="acoes">
-                            <input type="number" id="input-${item.numero_lote}" placeholder="Qtd" min="1">
-                            <button class="btn-sm btn-usar" onclick="darBaixa('${item.numero_lote}')">${dict[idiomaAtual].btnUsar}</button>
-                            <button class="btn-sm btn-excluir" onclick="excluirLote('${item.numero_lote}')">${dict[idiomaAtual].btnExcluir}</button>
-                        </td>
-                    </tr>`;
-            });
-        } catch(e) { console.error("Erro:", e); }
-    }
-
-    async function cadastrarLote() {
-        const idReagente = document.getElementById('novo_reagente').value;
-        const lote = document.getElementById('novo_lote').value;
-        const qtd = document.getElementById('nova_qtd').value;
-        const validade = document.getElementById('nova_validade').value;
-
-        if(!idReagente || !lote || !qtd || !validade) {
-            alert(idiomaAtual === 'pt' ? "Preencha todos os campos!" : "Fill all fields!");
-            return;
-        }
-
-        const body = { reagente_id: idReagente, numero_lote: lote, quantidade_atual: qtd, data_validade: validade };
-
-        try {
-            // CORREÇÃO: Removido o localhost
-            const res = await fetch('/novo-lote', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
-            if(res.ok) {
-                document.getElementById('novo_lote').value = '';
-                document.getElementById('nova_qtd').value = '';
-                document.getElementById('nova_validade').value = '';
-                carregarEstoque(); 
-            } else { const erro = await res.json(); alert(erro.erro); }
-        } catch(e) { alert("Erro de conexão."); }
-    }
-
-    async function darBaixa(lote) {
-        const qtd = document.getElementById(`input-${lote}`).value;
-        if(!qtd || qtd <= 0) return;
-        try {
-            // CORREÇÃO: Removido o localhost
-            const res = await fetch('/baixar-estoque', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({numero_lote: lote, quantidade_usada: qtd}) });
-            if(res.ok) carregarEstoque(); else { const erro = await res.json(); alert(erro.erro); }
-        } catch(e) { alert("Erro de conexão."); }
-    }
-
-    async function excluirLote(lote) {
-        const msg = idiomaAtual === 'pt' ? `ATENÇÃO: Deseja EXCLUIR o lote ${lote}?` : `WARNING: Delete batch ${lote}?`;
-        if(confirm(msg)) {
-            // CORREÇÃO: Removido o localhost
-            await fetch(`/excluir-lote/${lote}`, { method: 'DELETE' });
-            carregarEstoque();
-        }
-    }
-
-    function filtrarTabela() {
-        const texto = document.getElementById('pesquisa').value.toLowerCase();
-        document.querySelectorAll('#tabela-estoque tr').forEach(linha => {
-            linha.style.display = linha.innerText.toLowerCase().includes(texto) ? '' : 'none';
+    // Permite cadastrar pressionando Enter nos inputs
+    ['novo_lote', 'nova_qtd', 'nova_validade', 'novo_fornecedor'].forEach(id => {
+        document.getElementById(id)?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') cadastrarLote();
         });
-    }
+    });
 
-    function exportarExcel() {
-        const linhas = document.querySelectorAll('#tabela-estoque tr');
-        let csv = `${dict[idiomaAtual].thReagente};${dict[idiomaAtual].thLote};${dict[idiomaAtual].thValidade};Quantidade;${dict[idiomaAtual].thStatus}\n`;
-        linhas.forEach(linha => {
-            if (linha.style.display !== 'none') {
-                const cols = linha.querySelectorAll('td');
-                csv += `${cols[0].innerText.replace(/;/g, '')};${cols[1].innerText.replace(/;/g, '')};${cols[2].innerText.replace(/;/g, '')};${cols[3].innerText.replace(/;/g, '')};${cols[4].innerText.replace(/;/g, '')}\n`;
-            }
-        });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' }));
-        link.download = `MolarisStock_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.csv`;
-        link.click();
-    }
-
+    // Inicia carregando reagentes e estoque
     carregarReagentes();
     carregarEstoque();
 </script>
