@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-    res.redirect('/login.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const connectionString = process.env.DATABASE_URL || "postgresql://postgres.icjsarcbcbqwjnouylnf:yitzhak20072347123@aws-1-sa-east-1.pooler.supabase.com:5432/postgres";
