@@ -237,6 +237,10 @@
     position:relative;
     display:flex;
     align-items:center;
+    width:100%;
+  }
+  .input-wrap input{
+    padding-right:72px;
   }
   
   select, input{
@@ -625,13 +629,23 @@
         <input type="number" id="nova_qtd" placeholder="Qtd" min="0.01" step="any" required>
       </div>
 
-      <!-- 4. DATA DE VALIDADE (BLINDADA & FLUIDA) -->
+      <!-- 4. DATA DE VALIDADE (DIGITAÇÃO SIMPLES DD/MM/AAAA) -->
       <div class="form-group">
         <label for="nova_validade">
-          <span id="lbl-validade">Validade</span>
-          <span class="hint" id="hint-dias-restantes">Data futura</span>
+          <span id="lbl-validade">Validade (DD/MM/AAAA)</span>
+          <span class="hint" id="hint-dias-restantes">Ex: 15/10/2027</span>
         </label>
-        <input type="date" id="nova_validade" onchange="validarDataValidade()" required>
+        <input 
+          type="text" 
+          id="nova_validade" 
+          placeholder="DD/MM/AAAA" 
+          maxlength="10" 
+          inputmode="numeric" 
+          style="font-family:'JetBrains Mono', monospace; letter-spacing:0.04em;" 
+          oninput="mascararData(this)" 
+          onblur="validarDataDigitada(false)" 
+          required
+        >
         <!-- Atalhos rápidos de validade com 1 clique -->
         <div class="validade-presets">
           <button type="button" class="btn-preset" onclick="definirValidadeMeses(6)">+6m</button>
@@ -738,66 +752,99 @@
         window.location.href = 'login.html';
     }
 
-    // --- CONFIGURAÇÃO INICIAL DE DATAS BLINDADAS ---
-    const hojeObj = new Date();
-    const hojeStr = hojeObj.toISOString().split('T')[0];
-    const dataMin = hojeStr; // Não permite datas no passado na entrada
-    const dataMax = new Date(hojeObj.getFullYear() + 10, 11, 31).toISOString().split('T')[0]; // Limite de 10 anos (impede 111111)
+    // --- MÁSCARA AUTOMÁTICA DE DATA (DD/MM/AAAA) ---
+    function mascararData(input) {
+        let v = input.value.replace(/\D/g, ''); // apenas dígitos
+        if (v.length > 8) v = v.slice(0, 8);
 
-    const inputValidade = document.getElementById('nova_validade');
-    inputValidade.min = dataMin;
-    inputValidade.max = dataMax;
+        if (v.length >= 5) {
+            input.value = `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`;
+        } else if (v.length >= 3) {
+            input.value = `${v.slice(0, 2)}/${v.slice(2)}`;
+        } else {
+            input.value = v;
+        }
+
+        // Validação sutil quando completar os 10 caracteres
+        const hint = document.getElementById('hint-dias-restantes');
+        if (input.value.length === 10) {
+            validarDataDigitada(true);
+        } else {
+            hint.innerText = "Ex: 15/10/2027";
+            hint.style.color = "var(--cyan)";
+        }
+    }
 
     // --- ATALHOS RÁPIDOS DE VALIDADE (+6m, +1a, +2a...) ---
     function definirValidadeMeses(meses) {
         const d = new Date();
         d.setMonth(d.getMonth() + meses);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
-        inputValidade.value = `${yyyy}-${mm}-${dd}`;
-        validarDataValidade();
-        exibirToast(`Validade configurada para ${dd}/${mm}/${yyyy}`, 'sucesso');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        
+        const input = document.getElementById('nova_validade');
+        input.value = `${dd}/${mm}/${yyyy}`;
+        validarDataDigitada(true);
+        exibirToast(`Validade preenchida: ${dd}/${mm}/${yyyy}`, 'sucesso');
     }
 
-    // --- VALIDAÇÃO INTELIGENTE DE VALIDADE ---
-    function validarDataValidade() {
-        const val = inputValidade.value;
+    // --- VALIDAÇÃO DA DATA DIGITADA ---
+    function validarDataDigitada(silencioso = false) {
+        const input = document.getElementById('nova_validade');
+        const val = input.value.trim();
         const hint = document.getElementById('hint-dias-restantes');
+
         if (!val) {
-            hint.innerText = "Data futura";
+            hint.innerText = "Ex: 15/10/2027";
             hint.style.color = "var(--cyan)";
-            return true;
+            return false;
         }
 
-        const partes = val.split('-');
-        const ano = parseInt(partes[0], 10);
-        
-        // Bloqueio rigoroso de anos absurdos como 111111 ou < 2024
-        if (isNaN(ano) || ano > 2040 || ano < 2024) {
-            exibirToast("⚠️ Ano de validade inválido! Digite um ano entre 2024 e 2040.", "erro");
-            inputValidade.value = "";
-            hint.innerText = "Ano inválido!";
+        const partes = val.split('/');
+        if (partes.length !== 3 || partes[2].length !== 4) {
+            if (!silencioso) {
+                exibirToast("⚠️ Digite a data completa no formato DD/MM/AAAA.", "erro");
+            }
+            hint.innerText = "Data incompleta";
+            hint.style.color = "var(--warning)";
+            return false;
+        }
+
+        const dia = parseInt(partes[0], 10);
+        const mes = parseInt(partes[1], 10);
+        const ano = parseInt(partes[2], 10);
+
+        if (isNaN(dia) || dia < 1 || dia > 31 || isNaN(mes) || mes < 1 || mes > 12) {
+            if (!silencioso) exibirToast("⚠️ Dia ou mês inválido na data de validade.", "erro");
+            hint.innerText = "Data inválida";
             hint.style.color = "var(--danger)";
             return false;
         }
 
-        const dataSelecionada = new Date(val);
-        const agora = new Date();
-        agora.setHours(0,0,0,0);
-        dataSelecionada.setHours(0,0,0,0);
+        if (isNaN(ano) || ano < 2024 || ano > 2040) {
+            if (!silencioso) exibirToast("⚠️ O ano deve estar entre 2024 e 2040.", "erro");
+            hint.innerText = "Ano fora do limite!";
+            hint.style.color = "var(--danger)";
+            return false;
+        }
 
-        const diffDias = Math.ceil((dataSelecionada - agora) / (1000 * 60 * 60 * 24));
+        const dataObj = new Date(ano, mes - 1, dia);
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        dataObj.setHours(0, 0, 0, 0);
+
+        const diffDias = Math.ceil((dataObj - hoje) / (1000 * 60 * 60 * 24));
         if (diffDias < 0) {
-            exibirToast("⚠️ A data de validade já está vencida! Escolha uma data futura.", "erro");
+            if (!silencioso) exibirToast("⚠️ Esta data já venceu no passado! Escolha uma data futura.", "erro");
             hint.innerText = `Vencido há ${Math.abs(diffDias)}d`;
             hint.style.color = "var(--danger)";
             return false;
-        } else {
-            hint.innerText = `Válido por ~${diffDias} dias`;
-            hint.style.color = "var(--success)";
-            return true;
         }
+
+        hint.innerText = `Válido por ~${diffDias} dias`;
+        hint.style.color = "var(--success)";
+        return true;
     }
 
     // --- GERADOR DE LOTE AUTOMÁTICO ---
@@ -1035,13 +1082,18 @@
             return;
         }
         if (!validade) {
-            exibirToast("⚠️ Escolha uma data de validade.", "erro");
+            exibirToast("⚠️ Digite a data de validade (DD/MM/AAAA).", "erro");
             document.getElementById('nova_validade').focus();
             return;
         }
-        if (!validarDataValidade()) {
+        if (!validarDataDigitada(false)) {
+            document.getElementById('nova_validade').focus();
             return;
         }
+
+        // Converte DD/MM/AAAA para YYYY-MM-DD
+        const partesVal = validade.trim().split('/');
+        const dataIso = `${partesVal[2]}-${partesVal[1].padStart(2, '0')}-${partesVal[0].padStart(2, '0')}`;
 
         const btnCadastrar = document.getElementById('txt-btn-cadastrar');
         const textoOriginal = btnCadastrar.innerHTML;
@@ -1052,7 +1104,7 @@
             reagente_id: idReagente,
             numero_lote: lote,
             quantidade_atual: Number(qtd),
-            data_validade: validade,
+            data_validade: dataIso,
             fornecedor: fornecedor || 'Padrão',
             usuario_nome: sessionStorage.getItem('usuario') || 'Cientista'
         };
@@ -1071,6 +1123,9 @@
                 // Limpa campos para a próxima entrada com fluidez
                 document.getElementById('novo_lote').value = '';
                 document.getElementById('nova_qtd').value = '';
+                document.getElementById('nova_validade').value = '';
+                document.getElementById('hint-dias-restantes').innerText = 'Ex: 15/10/2027';
+                document.getElementById('hint-dias-restantes').style.color = 'var(--cyan)';
                 document.getElementById('novo_fornecedor').value = '';
                 // Mantém o reagente se o cientista for cadastrar outro lote da mesma substância
                 

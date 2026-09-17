@@ -429,8 +429,17 @@ app.post('/novo-lote', async (req, res) => {
             return res.status(400).json({ error: "A quantidade deve ser um número maior que zero." });
         }
 
+        let dataIso = String(data_validade).trim();
+        if (dataIso.includes('/')) {
+            const partes = dataIso.split('/');
+            if (partes.length === 3) {
+                dataIso = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+            }
+        }
+
         // Validação estrita de data de validade (impede anos impossíveis como 111111)
-        const anoValidade = new Date(data_validade).getFullYear();
+        const parsedDate = new Date(dataIso);
+        const anoValidade = parsedDate.getFullYear();
         if (isNaN(anoValidade) || anoValidade < 2024 || anoValidade > 2040) {
             return res.status(400).json({ error: "Data de validade inválida! O ano deve estar entre 2024 e 2040." });
         }
@@ -446,7 +455,7 @@ app.post('/novo-lote', async (req, res) => {
             numero_lote,
             quantidade_atual,
             quantidade_atual,
-            data_validade,
+            dataIso,
             data_fabricacao || null,
             fornecedor || 'Não informado'
         ]);
